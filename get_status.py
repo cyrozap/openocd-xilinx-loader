@@ -37,20 +37,32 @@ read_status_reg_commands = [
 ]
 
 def print_status(status):
-    print('SWWD_strikeout\t', 1 if (status & (1 << 15)) else 0)
-    print('IN_PWRDN\t', 1 if (status & (1 << 14)) else 0)
-    print('DONE\t\t', 1 if (status & (1 << 13)) else 0)
-    print('INIT_B\t\t', 1 if (status & (1 << 12)) else 0)
-    print('MODE\t\t', (status & ((1 << 11) | (1 << 10) | (1 << 9))) >> 9)
-    print('HSWAPEN\t\t', 1 if (status & (1 << 8)) else 0)
-    print('PART_SECURED\t', 1 if (status & (1 << 7)) else 0)
-    print('DEC_ERROR\t', 1 if (status & (1 << 6)) else 0)
-    print('GHIGH_B\t\t', 1 if (status & (1 << 5)) else 0)
-    print('GWE\t\t', 1 if (status & (1 << 4)) else 0)
-    print('GTS_CFG_B\t', 1 if (status & (1 << 3)) else 0)
-    print('DCM_LOCK\t', 1 if (status & (1 << 2)) else 0)
-    print('ID_ERROR\t', 1 if (status & (1 << 1)) else 0)
-    print('CRC_ERROR\t', 1 if (status & (1 << 0)) else 0)
+    status_fields = [
+        ['SWWD_strikeout', bool, 15],
+        ['IN_PWRDN',       bool, 14],
+        ['DONE',           bool, 13],
+        ['INIT_B',         bool, 12],
+        ['MODE',           int,  [11, 10, 9]],
+        ['HSWAPEN',        bool, 8],
+        ['PART_SECURED',   bool, 7],
+        ['DEC_ERROR',      bool, 6],
+        ['GHIGH_B',        bool, 5],
+        ['GWE',            bool, 4],
+        ['GTS_CFG_B',      bool, 3],
+        ['DCM_LOCK',       bool, 2],
+        ['ID_ERROR',       bool, 1],
+        ['CRC_ERROR',      bool, 0],
+    ]
+
+    for field in status_fields:
+        padded_name = field[0] + ' ' * (16 - len(field[0]))
+        if field[1] == bool:
+            result = 1 if (status & (1 << field[2])) else 0
+        elif field[1] == int:
+            result = 0
+            for bit in field[2]:
+                result |= status & (1 << bit) >> field[2][-1]
+        print(padded_name, result)
 
 if __name__ == "__main__":
     tap = input("Tap name [xc6slx100.tap]: ") or 'xc6slx100.tap'
