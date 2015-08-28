@@ -10,7 +10,7 @@ Some Python scripts to program Xilinx FPGAs using OpenOCD
 ## Usage
 
 ```bash
-$ ./load_fpga.py
+$ ./load_fpga.py your_bitstream.bit
 $ ./get_status.py
 ```
 
